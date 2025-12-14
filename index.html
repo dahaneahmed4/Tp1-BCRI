@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>TP Communication HART – USTHB</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Police Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================================
+           PALETTE GÉNÉRALE (THÈME SOMBRE + ACCENTS VIOLET/CYAN)
+        ============================================================ */
+        :root {
+            --bg-color: #050914;
+            --bg-gradient: radial-gradient(circle at top, #2f1363 0, #050914 55%, #02030a 100%);
+            --accent-color: #9b5cff;
+            --accent-color-2: #00f0ff;
+            --accent-soft: rgba(155, 92, 255, 0.18);
+            --text-color: #e5e9ff;
+            --muted-text: #9aa4d4;
+            --card-bg: rgba(8, 13, 33, 0.9);
+            --code-bg: #050816;
+
+            /* EN-TÊTE INSTITUTIONNEL BLEU NUIT PREMIUM */
+            --header-bg-1: #001a33;
+            --header-bg-2: #000d1a;
+            --header-border: #00e0ff;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            line-height: 1.7;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+        }
+
+        /* ============================================================
+           EN-TÊTE BLEU NUIT PREMIUM (CHOIX 3)
+        ============================================================ */
+        header {
+            padding: 2rem 2.2rem 1.8rem 2.2rem;
+            background: linear-gradient(135deg, var(--header-bg-1), var(--header-bg-2));
+            border-bottom: 2px solid var(--header-border);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.7);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.9rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #e8f6ff;
+        }
+
+        header h2 {
+            margin: 0.4rem 0 0.6rem 0;
+            font-weight: 400;
+            font-size: 1.05rem;
+            color: #b8dfff;
+        }
+
+        header p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #8fb7d9;
+        }
+
+        /* ============================================================
+           STRUCTURE GÉNÉRALE
+        ============================================================ */
+        main {
+            max-width: 1200px;
+            margin: 2.5rem auto 3rem auto;
+            padding: 0 1.4rem;
+        }
+
+        .section {
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 2rem 2.2rem;
+            margin-bottom: 2.8rem;
+            border: 1px solid rgba(155, 92, 255, 0.25);
+            box-shadow: 0 20px 45px rgba(0,0,0,0.75);
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 1.45rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--accent-color-2);
+        }
+
+        h3 {
+            font-size: 1.15rem;
+            font-weight: 500;
+            margin-top: 1.6rem;
+            color: var(--accent-color);
+        }
+
+        h4 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 1.2rem;
+            color: var(--accent-color-2);
+        }
+
+        p, li {
+            font-size: 0.97rem;
+        }
+
+        ul { padding-left: 1.3rem; }
+
+        .section-number {
+            color: var(--accent-color-2);
+            font-weight: 600;
+            margin-right: 0.4rem;
+        }
+
+        /* ============================================================
+           TABLE DES MATIÈRES
+        ============================================================ */
+        .toc {
+            background: radial-gradient(circle at top left, rgba(155, 92, 255, 0.22), rgba(5, 9, 20, 0.95));
+            border-radius: 18px;
+            padding: 1.6rem 1.8rem;
+            border: 1px solid rgba(155, 92, 255, 0.45);
+        }
+
+        .toc a {
+            color: var(--accent-color-2);
+            text-decoration: none;
+        }
+
+        .toc a:hover { text-decoration: underline; }
+
+        /* ============================================================
+           TABLEAUX INSTITUTIONNELS
+        ============================================================ */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.4rem 0;
+            font-size: 0.95rem;
+        }
+
+        table th {
+            background: rgba(0, 122, 204, 0.35);
+            color: #bfeaff;
+            padding: 0.85rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.4);
+        }
+
+        table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        table tr:nth-child(even) {
+            background: rgba(255,255,255,0.04);
+        }
+
+        /* ============================================================
+           ENCADRÉ ASTUCE
+        ============================================================ */
+        .astuce {
+            background: rgba(0, 240, 255, 0.08);
+            border-left: 4px solid var(--accent-color-2);
+            padding: 1.1rem 1.3rem;
+            border-radius: 12px;
+            margin: 1.6rem 0;
+        }
+
+        /* ============================================================
+           ORGANIGRAMME
+        ============================================================ */
+        .organigramme {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 22px;
+            margin: 2.2rem 0;
+        }
+
+        .org-box {
+            background: rgba(155, 92, 255, 0.12);
+            border: 1px solid rgba(155, 92, 255, 0.4);
+            padding: 1.1rem 1.5rem;
+            border-radius: 14px;
+            width: 280px;
+            text-align: center;
+            color: var(--accent-color-2);
+            font-weight: 500;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.55);
+        }
+
+        .org-line {
+            width: 2px;
+            height: 32px;
+            background: var(--accent-color-2);
+        }
+
+        .org-row {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* ============================================================
+           FOOTER
+        ============================================================ */
+        footer {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--muted-text);
+            padding: 1.6rem 1rem 2rem 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>TP Communication HART</h1>
+    <h2>Capteur de Pression Intelligent — Endress+Hauser Cerabar M PMP55</h2>
+    <p>Département d'Automatique — USTHB — Année Universitaire 2025–2026</p>
+</header>
+
+<main>
+
+    <!-- ============================================================
+         TABLE DES MATIÈRES
+    ============================================================ -->
+    <section class="section toc" id="table-matieres">
+        <h2><span class="section-number">0.</span>Table des matières</h2>
+
+        <table>
+            <tr>
+                <th>Section</th>
+                <th>Page</th>
+            </tr>
+            <tr>
+                <td><a href="#objectifs">1. Objectifs du TP</a></td>
+                <td>2</td>
+            </tr>
+            <tr>
+                <td><a href="#rappels-theoriques">2. Rappels Théoriques</a></td>
+                <td>2</td>
+            </tr>
+            <tr>
+                <td><a href="#presentation-capteur">3. Présentation du Capteur</a></td>
+                <td>3</td>
+            </tr>
+            <tr>
+                <td><a href="#materiel">4. Matériel et Équipements</a></td>
+                <td>3</td>
+            </tr>
+            <tr>
+                <td><a href="#schema-cablage">5. Schéma de Câblage</a></td>
+                <td>4</td>
+            </tr>
+            <tr>
+                <td><a href="#procedure">6. Procédure Expérimentale</a></td>
+                <td>4</td>
+            </tr>
+            <tr>
+                <td><a href="#resultats">7. Résultats Expérimentaux</a></td>
+                <td>5</td>
+            </tr>
+            <tr>
+                <td><a href="#questions">8. Questions de Réflexion</a></td>
+                <td>5</td>
+            </tr>
+            <tr>
+                <td><a href="#conclusion">9. Conclusion</a></td>
+                <td>6</td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- ============================================================
+         1. OBJECTIFS DU TP
+    ============================================================ -->
+    <section class="section" id="objectifs">
+        <h2><span class="section-number">1.</span>Objectifs du TP</h2>
+
+        <h3>1.1 Objectifs pédagogiques</h3>
+        <p>
+            Ce travail pratique a pour objectif de familiariser l’étudiant avec la mise en œuvre
+            du protocole de communication HART appliqué à un capteur industriel intelligent.
+            L’étudiant apprend à manipuler une boucle 4–20 mA, à établir une communication
+            numérique superposée, et à configurer un capteur de pression moderne.
+        </p>
+
+        <h3>1.2 Compétences visées</h3>
+        <ul>
+            <li>Comprendre le principe de la communication HART et sa structure hybride.</li>
+            <li>Mettre en œuvre une boucle de courant 4–20 mA avec superposition FSK.</li>
+            <li>Identifier, paramétrer et configurer un capteur intelligent.</li>
+            <li>Lire, modifier et sauvegarder les paramètres via un communicateur HART.</li>
+            <li>Diagnostiquer l’état de santé du capteur et interpréter les messages HART.</li>
+            <li>Analyser la linéarité et la qualité métrologique d’un transmetteur industriel.</li>
+        </ul>
+
+        <div class="astuce">
+            <h3>Astuce pédagogique</h3>
+            <p>
+                Le protocole HART est un excellent point d’entrée vers l’Industrie 4.0 :
+                il combine la robustesse analogique et l’intelligence numérique, tout en
+                restant compatible avec les installations existantes.
+            </p>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         2. RAPPELS THÉORIQUES
+    ============================================================ -->
+    <section class="section" id="rappels-theoriques">
+        <h2><span class="section-number">2.</span>Rappels théoriques</h2>
+
+        <h3>2.1 La boucle de courant 4–20 mA</h3>
+        <p>
+            La boucle 4–20 mA est le standard universel en instrumentation industrielle.
+            Elle permet de transmettre une grandeur physique (pression, température, niveau…)
+            sous forme de courant, ce qui présente plusieurs avantages :
+        </p>
+
+        <ul>
+            <li><strong>Immunité élevée</strong> aux perturbations électromagnétiques.</li>
+            <li><strong>Faible sensibilité</strong> aux chutes de tension sur de longues distances.</li>
+            <li><strong>Diagnostic intégré</strong> grâce à la zone 0–4 mA (rupture, défaut).</li>
+            <li><strong>Linéarité simple</strong> entre la grandeur mesurée et le courant transmis.</li>
+        </ul>
+
+        <p>
+            La relation entre la grandeur mesurée \(X\) et le courant \(I\) est donnée par :
+        </p>
+
+        <pre><code>I = 4 + (X - LRV) / (URV - LRV) × 16</code></pre>
+
+        <div class="astuce">
+            <h3>Astuce métrologique</h3>
+            <p>
+                Une erreur de 0,1 mA correspond à une erreur relative de 0,625 % à 16 mA.
+                Ce seuil est souvent utilisé comme critère de recalibration.
+            </p>
+        </div>
+
+        <h3>2.2 Principe du protocole HART</h3>
+        <p>
+            HART (Highway Addressable Remote Transducer) est un protocole hybride
+            permettant de superposer une communication numérique à une boucle analogique
+            4–20 mA existante. Il utilise une modulation FSK (Frequency Shift Keying)
+            de faible amplitude, ce qui garantit que la valeur moyenne du courant reste
+            inchangée.
+        </p>
+
+        <h3>2.3 Modulation FSK : superposition sans perturbation</h3>
+        <p>
+            La modulation FSK utilise deux fréquences :
+        </p>
+
+        <ul>
+            <li>1200 Hz pour le bit logique « 1 »</li>
+            <li>2200 Hz pour le bit logique « 0 »</li>
+        </ul>
+
+        <p>
+            Le signal HART est un courant alternatif de faible amplitude superposé au
+            courant continu 4–20 mA. Sa moyenne est nulle :
+        </p>
+
+        <pre><code>&lt;i_HART(t)&gt; = 0</code></pre>
+
+        <p>
+            Ainsi, la valeur moyenne du courant reste égale à la mesure analogique.
+            Les systèmes analogiques ne voient que la composante DC, tandis que le
+            modem HART extrait la composante AC via un filtrage passe-bande.
+        </p>
+
+        <h3>2.4 Caractéristiques clés du protocole HART</h3>
+        <ul>
+            <li>Communication <strong>bidirectionnelle</strong>.</li>
+            <li>Compatible <strong>multi-fabricants</strong>.</li>
+            <li>Transmission <strong>hybride</strong> analogique/numérique.</li>
+            <li>Configuration <strong>à distance</strong>.</li>
+            <li>Support de la <strong>maintenance prédictive</strong>.</li>
+        </ul>
+
+        <div class="astuce">
+            <h3>Astuce conceptuelle</h3>
+            <p>
+                HART est un protocole de transition : il modernise les installations
+                analogiques sans les remplacer, tout en ouvrant la voie à l’IIoT.
+            </p>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         3. PRÉSENTATION DU CAPTEUR
+    ============================================================ -->
+    <section class="section" id="presentation-capteur">
+        <h2><span class="section-number">3.</span>Présentation du capteur</h2>
+
+        <table>
+            <tr>
+                <th colspan="2">Capteur de pression Cerabar M PMP55</th>
+            </tr>
+            <tr>
+                <td><strong>Fabricant</strong></td>
+                <td>Endress+Hauser</td>
+            </tr>
+            <tr>
+                <td><strong>Modèle</strong></td>
+                <td>Cerabar M PMP55</td>
+            </tr>
+            <tr>
+                <td><strong>Technologie</strong></td>
+                <td>Cellule capacitive céramique haute précision</td>
+            </tr>
+            <tr>
+                <td><strong>Signal de sortie</strong></td>
+                <td>4–20 mA + Communication HART</td>
+            </tr>
+            <tr>
+                <td><strong>Alimentation</strong></td>
+                <td>11 à 45 VDC</td>
+            </tr>
+            <tr>
+                <td><strong>Applications</strong></td>
+                <td>Eau, air, gaz, procédés industriels</td>
+            </tr>
+        </table>
+
+        <div class="astuce">
+            <h3>Astuce pratique</h3>
+            <p>
+                La technologie céramique offre une excellente résistance chimique,
+                une grande stabilité à long terme et une robustesse mécanique
+                supérieure aux cellules métalliques.
+            </p>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         4. MATÉRIEL ET ÉQUIPEMENTS
+    ============================================================ -->
+    <section class="section" id="materiel">
+        <h2><span class="section-number">4.</span>Matériel et équipements</h2>
+
+        <h3>4.1 Matériel requis</h3>
+        <ul>
+            <li>Capteur Endress+Hauser PMP55 avec protocole HART.</li>
+            <li>Alimentation stabilisée 24 VDC.</li>
+            <li>Résistance de charge 250 Ω (±5 %).</li>
+            <li>Communicateur HART ou modem USB-HART.</li>
+            <li>Logiciel FieldCare ou DeviceCare.</li>
+            <li>Multimètre numérique industriel.</li>
+            <li>Câblage blindé et connecteurs sécurisés.</li>
+        </ul>
+
+        <h3>4.2 Points d’attention</h3>
+        <ul>
+            <li>Respecter la polarité avant mise sous tension.</li>
+            <li>Vérifier l’intégrité des connexions.</li>
+            <li>Utiliser des câbles blindés pour éviter les perturbations.</li>
+        </ul>
+
+        <div class="astuce">
+            <h3>Astuce sécurité</h3>
+            <p>
+                Une inversion de polarité peut endommager le capteur ou empêcher
+                la communication HART. Toujours vérifier avant d’alimenter.
+            </p>
+        </div>
+    </section>
+    <!-- ============================================================
+         5. SCHÉMA DE CÂBLAGE
+    ============================================================ -->
+    <section class="section" id="schema-cablage">
+        <h2><span class="section-number">5.</span>Schéma de câblage</h2>
+
+        <p>
+            Le schéma de câblage d’une boucle HART repose sur une architecture simple mais
+            rigoureusement définie. La boucle 4–20 mA transporte la mesure analogique, tandis
+            que la communication HART est superposée via une modulation FSK.
+        </p>
+
+        <div class="astuce">
+            <h3>Schéma textuel</h3>
+            <p>
+                <strong>Alimentation 24 VDC</strong> → <strong>Capteur PMP55</strong> → <strong>Résistance 250 Ω</strong> → Retour alimentation.  
+                Le communicateur HART se connecte <strong>en parallèle</strong> sur la résistance.
+            </p>
+        </div>
+
+        <div class="astuce">
+            <h3>Astuce pratique</h3>
+            <p>
+                La résistance de 250 Ω est indispensable : elle crée une chute de tension
+                suffisante pour que le modem HART détecte la modulation FSK. Sans elle,
+                la communication numérique serait impossible.
+            </p>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         6. PROCÉDURE EXPÉRIMENTALE
+    ============================================================ -->
+    <section class="section" id="procedure">
+        <h2><span class="section-number">6.</span>Procédure expérimentale</h2>
+
+        <h3>6.1 Étape 1 : Mise sous tension</h3>
+        <ol>
+            <li>Alimenter le capteur PMP55 sous 24 VDC via la boucle de courant.</li>
+            <li>Vérifier que le courant de sortie se situe entre 4 et 20 mA.</li>
+            <li>Observer le temps de stabilisation (typiquement &lt; 5 secondes).</li>
+        </ol>
+
+        <h3>6.2 Étape 2 : Connexion HART</h3>
+        <ol>
+            <li>Connecter le communicateur HART en parallèle sur la résistance de 250 Ω.</li>
+            <li>Lancer la détection automatique du capteur.</li>
+            <li>Vérifier l’établissement de la communication (TAG, modèle, fabricant).</li>
+        </ol>
+
+        <h3>6.3 Étape 3 : Lecture des paramètres</h3>
+        <ol>
+            <li>Lire les informations d’identification : TAG, numéro de série, version.</li>
+            <li>Observer la pression mesurée en temps réel.</li>
+            <li>Vérifier les unités (bar, kPa, PSI).</li>
+            <li>Lire les valeurs LRV et URV.</li>
+            <li>Analyser l’état de diagnostic du capteur.</li>
+        </ol>
+
+        <h3>6.4 Étape 4 : Configuration avancée</h3>
+        <ol>
+            <li>Modifier l’unité de pression.</li>
+            <li>Effectuer un Zero Trim si nécessaire.</li>
+            <li>Ajuster l’échelle 4–20 mA selon le process.</li>
+            <li>Sauvegarder la configuration dans le capteur.</li>
+        </ol>
+
+        <div class="astuce">
+            <h3>Astuce de configuration</h3>
+            <p>
+                Le Zero Trim doit être effectué uniquement lorsque la pression réelle est
+                parfaitement nulle. Une mauvaise manipulation peut introduire un offset
+                permanent dans la mesure.
+            </p>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         7. RÉSULTATS EXPÉRIMENTAUX
+    ============================================================ -->
+    <section class="section" id="resultats">
+        <h2><span class="section-number">7.</span>Résultats expérimentaux</h2>
+
+        <p>
+            Les mesures suivantes ont été relevées en appliquant différentes pressions
+            sur le capteur. La linéarité est un critère essentiel pour valider la qualité
+            métrologique du transmetteur.
+        </p>
+
+        <table>
+            <tr>
+                <th>Pression appliquée</th>
+                <th>Courant mesuré (mA)</th>
+                <th>Observation</th>
+            </tr>
+            <tr>
+                <td>0 % (LRV)</td>
+                <td>4.00</td>
+                <td>Zéro de l’échelle</td>
+            </tr>
+            <tr>
+                <td>25 %</td>
+                <td>8.00</td>
+                <td>Premier quartile</td>
+            </tr>
+            <tr>
+                <td>50 %</td>
+                <td>12.00</td>
+                <td>Point médian</td>
+            </tr>
+            <tr>
+                <td>75 %</td>
+                <td>16.00</td>
+                <td>Troisième quartile</td>
+            </tr>
+            <tr>
+                <td>100 % (URV)</td>
+                <td>20.00</td>
+                <td>Pleine échelle</td>
+            </tr>
+        </table>
+
+        <div class="astuce">
+            <h3>Astuce métrologique</h3>
+            <p>
+                Une déviation supérieure à 0,1 mA par rapport à la valeur théorique
+                indique une dérive ou un défaut de calibration. Une recalibration est alors
+                recommandée.
+            </p>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         8. QUESTIONS DE RÉFLEXION
+    ============================================================ -->
+    <section class="section" id="questions">
+        <h2><span class="section-number">8.</span>Questions de réflexion</h2>
+
+        <ol>
+            <li>
+                Pourquoi la résistance de 250 Ω est-elle indispensable pour la communication HART ?
+            </li>
+            <li>
+                Quelle est la différence fondamentale entre HART et Modbus en termes d’architecture et d’application ?
+            </li>
+            <li>
+                Peut-on configurer le capteur via HART sans interrompre la boucle de mesure ? Expliquer.
+            </li>
+            <li>
+                Quel est le rôle stratégique de HART dans la maintenance prédictive industrielle ?
+            </li>
+            <li>
+                Bonus : Comment la modulation FSK permet-elle de superposer un signal numérique
+                sans affecter le signal analogique 4–20 mA ?
+            </li>
+        </ol>
+
+        <div class="astuce">
+            <h3>Astuce pour le rapport</h3>
+            <p>
+                Répondre à ces questions avec des schémas, des équations et des exemples
+                concrets augmente fortement la qualité académique du TP.
+            </p>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         9. CONCLUSION
+    ============================================================ -->
+    <section class="section" id="conclusion">
+        <h2><span class="section-number">9.</span>Conclusion</h2>
+
+        <p>
+            Ce TP a permis de comprendre en profondeur le fonctionnement d’un capteur
+            intelligent moderne et l’intérêt du protocole HART dans les systèmes industriels.
+            La combinaison d’une mesure analogique robuste et d’une communication numérique
+            flexible constitue un pilier essentiel de l’Industrie 4.0.
+        </p>
+
+        <ul>
+            <li>HART permet une configuration à distance fiable.</li>
+            <li>La maintenance prédictive est facilitée grâce aux diagnostics intégrés.</li>
+            <li>La compatibilité avec les installations existantes réduit les coûts.</li>
+            <li>Les évolutions HART-IP et WirelessHART ouvrent la voie à l’IIoT.</li>
+        </ul>
+
+        <div class="astuce">
+            <h3>Astuce finale</h3>
+            <p>
+                Un bon ingénieur ne se contente pas de mesurer : il comprend, analyse,
+                diagnostique et optimise. HART est un outil puissant pour cela.
+            </p>
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    © USTHB — Département d’Automatique — TP Communication HART - DAHANE AHMED LAMINE 
+    <br>Bon travail et bonne manipulation !
+</footer>
+
+</body>
+</html>
