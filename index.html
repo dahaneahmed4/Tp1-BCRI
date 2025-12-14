@@ -623,35 +623,212 @@
          8. QUESTIONS DE RÉFLEXION
     ============================================================ -->
     <section class="section" id="questions">
-        <h2><span class="section-number">8.</span>Questions de réflexion</h2>
+    <h2><span class="section-number">8.</span>Questions de réflexion — Réponses détaillées</h2>
 
-        <ol>
-            <li>
-                Pourquoi la résistance de 250 Ω est-elle indispensable pour la communication HART ?
-            </li>
-            <li>
-                Quelle est la différence fondamentale entre HART et Modbus en termes d’architecture et d’application ?
-            </li>
-            <li>
-                Peut-on configurer le capteur via HART sans interrompre la boucle de mesure ? Expliquer.
-            </li>
-            <li>
-                Quel est le rôle stratégique de HART dans la maintenance prédictive industrielle ?
-            </li>
-            <li>
-                Bonus : Comment la modulation FSK permet-elle de superposer un signal numérique
-                sans affecter le signal analogique 4–20 mA ?
-            </li>
-        </ol>
+    <!-- ============================================================
+         QUESTION 1
+    ============================================================ -->
+    <h3>1. Pourquoi la résistance de 250 Ω est-elle indispensable pour la communication HART ?</h3>
+    <p>
+        La résistance de 250 Ω joue un rôle fondamental dans la boucle HART car elle permet
+        de convertir les variations de courant en variations de tension détectables par le modem HART.
+        En effet, la communication HART repose sur une modulation FSK superposée au courant 4–20 mA.
+        Pour que cette modulation soit lisible, il faut qu’elle produise une variation de tension suffisante.
+    </p>
 
-        <div class="astuce">
-            <h3>Astuce pour le rapport</h3>
-            <p>
-                Répondre à ces questions avec des schémas, des équations et des exemples
-                concrets augmente fortement la qualité académique du TP.
-            </p>
-        </div>
-    </section>
+    <p>
+        Mathématiquement, la tension aux bornes de la résistance est donnée par :
+    </p>
+
+    <pre><code>V = I × R</code></pre>
+
+    <p>
+        Ainsi, pour un courant de 4 mA :
+    </p>
+
+    <pre><code>V = 0,004 × 250 = 1 V</code></pre>
+
+    <p>
+        Et pour 20 mA :
+    </p>
+
+    <pre><code>V = 0,02 × 250 = 5 V</code></pre>
+
+    <p>
+        Cette plage 1–5 V est idéale pour les entrées analogiques et pour la détection du signal FSK.
+        Sans cette résistance, la modulation HART serait trop faible pour être extraite, rendant la
+        communication impossible. La résistance de 250 Ω garantit donc :
+    </p>
+
+    <ul>
+        <li>une tension suffisante pour la détection du signal numérique ;</li>
+        <li>une impédance conforme aux spécifications HART ;</li>
+        <li>une compatibilité avec les cartes d’acquisition analogiques.</li>
+    </ul>
+
+    <div class="astuce">
+        <h3>Astuce</h3>
+        <p>
+            La valeur 250 Ω n’est pas choisie au hasard : elle correspond à l’impédance minimale
+            recommandée par la norme HART pour garantir une amplitude de modulation correcte.
+        </p>
+    </div>
+
+    <!-- ============================================================
+         QUESTION 2
+    ============================================================ -->
+    <h3>2. Quelle est la différence fondamentale entre HART et Modbus en termes d’architecture et d’application ?</h3>
+
+    <p>
+        La différence essentielle entre HART et Modbus réside dans leur architecture et leur philosophie
+        de communication.
+    </p>
+
+    <h4>Architecture HART</h4>
+    <ul>
+        <li>Protocole <strong>hybride</strong> : analogique (4–20 mA) + numérique (FSK).</li>
+        <li>Superposition du signal numérique sur la boucle existante.</li>
+        <li>Compatible avec les installations analogiques traditionnelles.</li>
+        <li>Communication relativement lente mais suffisante pour la configuration et le diagnostic.</li>
+    </ul>
+
+    <h4>Architecture Modbus</h4>
+    <ul>
+        <li>Protocole <strong>100 % numérique</strong>.</li>
+        <li>Fonctionne sur RS‑485 (Modbus RTU) ou Ethernet (Modbus TCP).</li>
+        <li>Transmission de données sous forme de registres numériques.</li>
+        <li>Plus rapide, adapté aux échanges de données volumineux.</li>
+    </ul>
+
+    <h4>Applications</h4>
+    <p>
+        HART est idéal pour moderniser des installations 4–20 mA existantes, configurer des capteurs
+        intelligents et réaliser du diagnostic.  
+        Modbus est utilisé pour la communication entre automates, variateurs, IHM et systèmes SCADA.
+    </p>
+
+    <div class="astuce">
+        <h3>Astuce</h3>
+        <p>
+            HART = modernisation sans changer l’infrastructure.  
+            Modbus = architecture numérique complète.
+        </p>
+    </div>
+
+    <!-- ============================================================
+         QUESTION 3
+    ============================================================ -->
+    <h3>3. Peut-on configurer le capteur via HART sans interrompre la boucle de mesure ? Expliquer.</h3>
+
+    <p>
+        Oui, c’est précisément l’un des avantages majeurs du protocole HART. La configuration peut être
+        réalisée <strong>en ligne</strong>, c’est‑à‑dire sans interrompre la mesure analogique 4–20 mA.
+    </p>
+
+    <p>
+        Cela est possible grâce à la séparation fréquentielle entre :
+    </p>
+
+    <ul>
+        <li>la composante <strong>DC</strong> (4–20 mA) représentant la mesure de process ;</li>
+        <li>la composante <strong>AC</strong> (FSK) représentant la communication numérique.</li>
+    </ul>
+
+    <p>
+        Le signal total peut être modélisé comme :
+    </p>
+
+    <pre><code>i_total(t) = I_process + i_HART(t)</code></pre>
+
+    <p>
+        Avec :
+    </p>
+
+    <pre><code>&lt;i_HART(t)&gt; = 0</code></pre>
+
+    <p>
+        Les systèmes analogiques filtrent naturellement la composante AC et ne voient que la valeur moyenne.
+        Le communicateur HART, lui, extrait la composante FSK via un filtre passe‑bande.
+    </p>
+
+    <div class="astuce">
+        <h3>Astuce</h3>
+        <p>
+            Grâce à cette séparation fréquentielle, on peut modifier les paramètres du capteur
+            sans perturber la mesure en cours.
+        </p>
+    </div>
+
+    <!-- ============================================================
+         QUESTION 4
+    ============================================================ -->
+    <h3>4. Quel est le rôle stratégique du protocole HART dans une démarche de maintenance prédictive industrielle ?</h3>
+
+    <p>
+        HART joue un rôle central dans la maintenance prédictive car il permet d’accéder à des informations
+        avancées sur l’état du capteur, au‑delà de la simple mesure de process.
+    </p>
+
+    <h4>Apports de HART pour la maintenance prédictive</h4>
+    <ul>
+        <li><strong>Diagnostics intégrés</strong> : détection de surplage, défaut interne, température excessive.</li>
+        <li><strong>Surveillance continue</strong> : état de santé, dérive, historique des alarmes.</li>
+        <li><strong>Configuration à distance</strong> : réduction des interventions physiques.</li>
+        <li><strong>Intégration IIoT</strong> : données exploitables dans des plateformes cloud.</li>
+    </ul>
+
+    <p>
+        En fournissant des informations de diagnostic en temps réel, HART permet d’anticiper les pannes,
+        d’optimiser les interventions et de réduire les arrêts non planifiés.
+    </p>
+
+    <div class="astuce">
+        <h3>Astuce</h3>
+        <p>
+            HART transforme un simple transmetteur en un nœud intelligent capable de remonter
+            des informations critiques pour la maintenance prédictive.
+        </p>
+    </div>
+
+    <!-- ============================================================
+         QUESTION 5 (BONUS)
+    ============================================================ -->
+    <h3>5. Bonus : Comment la modulation FSK permet-elle de superposer un signal numérique sans affecter le signal analogique 4–20 mA ?</h3>
+
+    <p>
+        La modulation FSK utilisée par HART repose sur une idée clé : la composante numérique est un signal
+        alternatif <strong>à moyenne nulle</strong>. Cela signifie que la valeur moyenne du courant reste strictement
+        égale à la mesure analogique.
+    </p>
+
+    <p>
+        Le courant total est :
+    </p>
+
+    <pre><code>i_total(t) = I_process + i_FSK(t)</code></pre>
+
+    <p>
+        Avec :
+    </p>
+
+    <pre><code>&lt;i_FSK(t)&gt; = 0</code></pre>
+
+    <p>
+        Les systèmes analogiques filtrent les hautes fréquences et ne perçoivent que la composante DC.
+        Le modem HART, au contraire, filtre la composante AC et décode les fréquences 1200 Hz et 2200 Hz.
+    </p>
+
+    <div class="astuce">
+        <h3>Astuce</h3>
+        <p>
+            La clé de la superposition HART est la séparation fréquentielle :  
+            DC = mesure analogique,  
+            AC = communication numérique.
+        </p>
+    </div>
+
+</section>
+
 
     <!-- ============================================================
          9. CONCLUSION
